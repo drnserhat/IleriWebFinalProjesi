@@ -1,0 +1,383 @@
+﻿@using IleriWebFinalProjesi.Models
+@using System.Globalization
+<style>
+	.hidden {
+		display: none;
+	}
+</style>
+
+<div id="slidey" style="display:none;">
+	<ul>
+		@foreach (var item in await ViewBag.Slider)
+		{
+			<li>
+				<img src="@item.Big_Image" style="height:300px" alt=" ">
+			<p class='title'>@item.Title</p>
+			<p class='description'> @item.Description</p	>
+		</li>
+		}
+		
+
+	</ul>
+</div>
+<script src="~/js/jquery.slidey.js"></script>
+<script src="~/js/jquery.dotdotdot.min.js"></script>
+<script type="text/javascript">
+	$("#slidey").slidey({
+		interval: 8000,
+		listCount: 5,
+		autoplay: false,
+		showList: true
+	});
+	$(".slidey-list-description").dotdotdot();
+</script>
+
+<!-- general -->
+<div class="general">
+	<h4 class="latest-text w3_latest_text">Filmler ve Diziler</h4>
+	<div class="container">
+		<div class="bs-example bs-example-tabs" role="tabpanel" data-example-id="togglable-tabs">
+			<ul id="myTab" class="nav nav-tabs" role="tablist">
+				<li role="presentation" class="active"><a href="#home" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true" onclick="MovieAndSeries()">Filmler ve Diziler</a></li>
+				<li role="presentation"><a href="#profile" role="tab" id="profile-tab" data-toggle="tab" aria-controls="profile" aria-expanded="false" onclick="Movie()"> Filmler</a></li>
+				<li role="presentation"><a href="#rating" id="rating-tab" role="tab" data-toggle="tab" aria-controls="rating" aria-expanded="true" onclick="Series()">Diziler</a></li>
+				<li role="presentation" style="float:right">
+
+					<input type="text" class="form-control " id="searchInputMovieAndSeries" placeholder="Search..." oninput="filterCards()">
+					<input type="text" class="form-control hidden" id="searchInputMovies" placeholder="Search..." oninput="filterMovies()">
+					<input type="text" class="form-control hidden" id="searchInputSeries" placeholder="Search..." oninput="filterSeries()">
+
+				
+				</li>
+			</ul>
+			<div id="myTabContent" class="tab-content">
+				<div role="tabpanel" class="tab-pane fade active in" id="home" aria-labelledby="home-tab">
+					<div class="w3_agile_featured_movies" id="cardContainer1">
+						@foreach (var item in await ViewBag.RandomMovies)
+						{
+							<div class="col-md-3 w3l-movie-gride-agile">
+								@if (item.MovieType==MovieType.movie)
+								{
+									<a asp-controller="Home" asp-action="GetMovie" asp-route-dataId="@item.Id" class="hvr-shutter-out-horizontal">
+										<img src="@item.Image" title="album-name" class="img-responsive" alt=" " />
+										<div class="w3l-action-icon"><i class="fa fa-play-circle" aria-hidden="true"></i></div>
+									</a>
+								}
+								else if (item.MovieType == MovieType.series)
+								{
+									<a asp-controller="Home" asp-action="GetSeries" asp-route-dataId="@item.Id" class="hvr-shutter-out-horizontal">
+										<img src="@item.Image" title="album-name" class="img-responsive" alt=" " />
+										<div class="w3l-action-icon"><i class="fa fa-play-circle" aria-hidden="true"></i></div>
+									</a>
+								}
+								
+								<div class="mid-1 agileits_w3layouts_mid_1_home">
+									<div class="w3l-movie-text">
+										<h6><a asp-controller="Home" asp-action="GetMovie" asp-route-dataId="@item.Id">@item.Title</a></h6>
+									</div>
+									<div class="mid-2 agile_mid_2_home">
+										<p>@item.Year</p>
+										<div class="block-stars">
+											@{
+												// Rating değeri (örneğin "9.4" veya "7.8")
+												string ratingString = item.Rating;
+
+												// Rating değerini double türüne dönüştür
+												double rating = double.Parse(ratingString, CultureInfo.InvariantCulture);
+
+												// Tam yıldız sayısı (9)
+												int fullStars = (int)Math.Floor(rating);
+
+												// Yıldızın kalan kısmı (0.4 gibi)
+												double remainder = rating - fullStars;
+
+												// Yıldızların HTML temsili
+												var starsHtml = "";
+
+												// Tam yıldızları ekle
+												for (int i = 0; i < fullStars; i++)
+												{
+													starsHtml += "<li><a href=\"#\"><i class=\"fa fa-star\" aria-hidden=\"true\"></i></a></li>";
+												}
+
+												// Yarım yıldız varsa ekle
+												if (remainder >= 0.5)
+												{
+													starsHtml += "<li><a href=\"#\"><i class=\"fa fa-star-half-o\" aria-hidden=\"true\"></i></a></li>";
+												}
+
+												// Eksik yıldızları ekle
+												for (int i = fullStars + 1; i < 5; i++)
+												{
+													starsHtml += "<li><a href=\"#\"><i class=\"fa fa-star-o\" aria-hidden=\"true\"></i></a></li>";
+												}
+											}
+											<ul class="w3l-ratings">
+												@Html.Raw(starsHtml)
+
+											
+												
+										
+											</ul>
+										</div>
+										<div class="clearfix"></div>
+									</div>
+								</div>
+
+								<div class="ribben">
+									@if (item.MovieType == MovieType.movie)
+									{
+
+										<p>film</p>
+
+									}else
+									{
+										<p>dizi</p>
+
+									}
+
+								</div>
+							</div>
+						}
+						
+
+						<div class="clearfix"> </div>
+					</div>
+				</div>
+				<div role="tabpanel" class="tab-pane fade" id="profile" aria-labelledby="profile-tab">
+					<div class="w3_agile_featured_movies" id="movieCardContainer">
+
+					@foreach (var item in await ViewBag.Movies)
+					{
+							<div class="col-md-3 w3l-movie-gride-agile">
+							<a asp-controller="Home" asp-action="GetMovie" asp-route-dataId="@item.Id" class="hvr-shutter-out-horizontal">
+								<img src="@item.Image" title="album-name" class="img-responsive" alt=" " />
+								<div class="w3l-action-icon"><i class="fa fa-play-circle" aria-hidden="true"></i></div>
+							</a>
+							<div class="mid-1 agileits_w3layouts_mid_1_home">
+								<div class="w3l-movie-text">
+									<h6><a asp-controller="Home" asp-action="GetMovie" asp-route-dataId="@item.Id">@item.Title</a></h6>
+								</div>
+								<div class="mid-2 agile_mid_2_home">
+									<p>@item.Year</p>
+									<div class="block-stars">
+										@{
+											// Rating değeri (örneğin "9.4" veya "7.8")
+											string ratingString = item.Rating;
+
+											// Rating değerini double türüne dönüştür
+											double rating = double.Parse(ratingString, CultureInfo.InvariantCulture);
+
+											// Tam yıldız sayısı (9)
+											int fullStars = (int)Math.Floor(rating);
+
+											// Yıldızın kalan kısmı (0.4 gibi)
+											double remainder = rating - fullStars;
+
+											// Yıldızların HTML temsili
+											var starsHtml = "";
+
+											// Tam yıldızları ekle
+											for (int i = 0; i < fullStars; i++)
+											{
+												starsHtml += "<li><a href=\"#\"><i class=\"fa fa-star\" aria-hidden=\"true\"></i></a></li>";
+											}
+
+											// Yarım yıldız varsa ekle
+											if (remainder >= 0.5)
+											{
+												starsHtml += "<li><a href=\"#\"><i class=\"fa fa-star-half-o\" aria-hidden=\"true\"></i></a></li>";
+											}
+
+											// Eksik yıldızları ekle
+											for (int i = fullStars + 1; i < 5; i++)
+											{
+												starsHtml += "<li><a href=\"#\"><i class=\"fa fa-star-o\" aria-hidden=\"true\"></i></a></li>";
+											}
+										}
+										<ul class="w3l-ratings">
+											@Html.Raw(starsHtml)
+
+
+
+
+										</ul>
+									</div>
+									<div class="clearfix"></div>
+								</div>
+							</div>
+								<div class="ribben">
+									
+
+										<p>film</p>
+
+									
+
+								</div>
+						</div>
+					}
+	
+					<div class="clearfix"> </div>
+					</div>
+					</div>
+			
+				<div role="tabpanel" class="tab-pane fade" id="rating" aria-labelledby="rating-tab">
+					<div class="w3_agile_featured_movies" id="seriesCardContainer">
+
+					@foreach (var item in await ViewBag.Series)
+					{
+							<div class="col-md-3 w3l-movie-gride-agile">
+							<a asp-controller="Home" asp-action="GetSeries" asp-route-dataId="@item.Id" class="hvr-shutter-out-horizontal">
+								<img src="@item.Image" title="album-name" class="img-responsive" alt=" " />
+								<div class="w3l-action-icon"><i class="fa fa-play-circle" aria-hidden="true"></i></div>
+							</a>
+							<div class="mid-1 agileits_w3layouts_mid_1_home">
+								<div class="w3l-movie-text">
+									<h6><a asp-controller="Home" asp-action="GetSeries" asp-route-dataId="@item.Id">@item.Title</a></h6>
+								</div>
+								<div class="mid-2 agile_mid_2_home">
+									<p>@item.Year</p>
+									<div class="block-stars">
+										@{
+											// Rating değeri (örneğin "9.4" veya "7.8")
+											string ratingString = item.Rating;
+
+											// Rating değerini double türüne dönüştür
+											double rating = double.Parse(ratingString, CultureInfo.InvariantCulture);
+
+											// Tam yıldız sayısı (9)
+											int fullStars = (int)Math.Floor(rating);
+
+											// Yıldızın kalan kısmı (0.4 gibi)
+											double remainder = rating - fullStars;
+
+											// Yıldızların HTML temsili
+											var starsHtml = "";
+
+											// Tam yıldızları ekle
+											for (int i = 0; i < fullStars; i++)
+											{
+												starsHtml += "<li><a href=\"#\"><i class=\"fa fa-star\" aria-hidden=\"true\"></i></a></li>";
+											}
+
+											// Yarım yıldız varsa ekle
+											if (remainder >= 0.5)
+											{
+												starsHtml += "<li><a href=\"#\"><i class=\"fa fa-star-half-o\" aria-hidden=\"true\"></i></a></li>";
+											}
+
+											// Eksik yıldızları ekle
+											for (int i = fullStars + 1; i < 5; i++)
+											{
+												starsHtml += "<li><a href=\"#\"><i class=\"fa fa-star-o\" aria-hidden=\"true\"></i></a></li>";
+											}
+										}
+										<ul class="w3l-ratings">
+											@Html.Raw(starsHtml)
+
+
+
+
+										</ul>
+									</div>
+									<div class="clearfix"></div>
+								</div>
+							</div>
+								<div class="ribben">
+							
+										<p>dizi</p>
+
+									
+
+								</div>
+						</div>
+					}
+
+					<div class="clearfix"> </div>
+			
+				</div>
+				</div>
+			
+			</div>
+		</div>
+	</div>
+</div>
+<!-- //general -->
+
+<script>
+	function filterCards() {
+		var searchInput = document.getElementById('searchInputMovieAndSeries').value.toLowerCase();
+		var cards = document.querySelectorAll('#cardContainer1 .w3l-movie-gride-agile');
+
+		cards.forEach(function (card) {
+			var cardText = card.textContent.toLowerCase();
+			if (cardText.includes(searchInput)) {
+				card.style.display = 'block';
+			} else {
+				card.style.display = 'none';
+			}
+		});
+	}
+
+	function filterMovies() {
+		var searchInput = document.getElementById('movieSearchInput').value.toLowerCase();
+		var movieCards = document.querySelectorAll('#movieCardContainer .w3l-movie-gride-agile');
+
+		movieCards.forEach(function (movie) {
+			var movieTitle = movie.textContent.toLowerCase();
+			if (movieTitle.includes(searchInput)) {
+				movie.style.display = 'block';
+			} else {
+				movie.style.display = 'none';
+			}
+		});
+	}
+
+	function filterSeries() {
+		var searchInput = document.getElementById('seriesSearchInput').value.toLowerCase();
+		var seriesCards = document.querySelectorAll('#seriesCardContainer .w3l-movie-gride-agile');
+
+		seriesCards.forEach(function (series) {
+			var seriesTitle = series.textContent.toLowerCase();
+			if (seriesTitle.includes(searchInput)) {
+				series.style.display = 'block';
+			} else {
+				series.style.display = 'none';
+			}
+		});
+	}
+</script>
+
+
+<script>
+	function MovieAndSeries() {
+		var inputElement = $('#searchInputMovieAndSeries');
+		var inputElement2 = $('#searchInputMovies');
+		var inputElement3 = $('#searchInputSeries');
+		if (inputElement.hasClass('hidden')) {
+			inputElement.removeClass('hidden');
+			inputElement2.addClass('hidden');
+			inputElement3.addClass('hidden');
+		} 
+	}
+	function Movie() {
+		var inputElement = $('#searchInputMovieAndSeries');
+		var inputElement2 = $('#searchInputMovies');
+		var inputElement3 = $('#searchInputSeries');
+		if (inputElement2.hasClass('hidden')) {
+			inputElement2.removeClass('hidden');
+			inputElement.addClass('hidden');
+			inputElement3.addClass('hidden');
+		}
+	}
+	function Series() {
+		var inputElement = $('#searchInputMovieAndSeries');
+		var inputElement2 = $('#searchInputMovies');
+		var inputElement3 = $('#searchInputSeries');
+		if (inputElement3.hasClass('hidden')) {
+			inputElement3.removeClass('hidden');
+			inputElement2.addClass('hidden');
+			inputElement.addClass('hidden');
+		}
+	}
+</script>

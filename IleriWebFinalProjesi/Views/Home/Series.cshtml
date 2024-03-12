@@ -1,0 +1,61 @@
+﻿
+
+
+
+<div class="faq">
+	<h4 class="latest-text w3_faq_latest_text w3_latest_text">TOP 100 DİZİ LİSTESİ</h4>
+	<div class="container">
+		<div class="agileits-news-top">
+			<ol class="breadcrumb">
+				<li><a href="index.html">Home</a></li>
+				<li class="active">Dizi Listesi</li>
+			</ol>
+		</div>
+
+		<div class="bs-example bs-example-tabs" role="tabpanel" data-example-id="togglable-tabs">
+
+			@* 	<ul id="myTab" class="nav nav-tabs" role="tablist">
+			<li role="presentation" class="active"><a href="#home" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true">0 - 9</a></li>
+			<li role="presentation"><a href="#a" role="tab" id="a-tab" data-toggle="tab" aria-controls="a">A</a></li>
+			<li role="presentation"><a href="#b" role="tab" id="b-tab" data-toggle="tab" aria-controls="b">B</a></li>
+			<li role="presentation"><a href="#c" role="tab" id="c-tab" data-toggle="tab" aria-controls="c">C</a></li>
+
+			</ul> *@
+			<div id="myTabContent" class="tab-content">
+				<div role="tabpanel" class="tab-pane fade in active" id="home" aria-labelledby="home-tab">
+					<div class="agile-news-table">
+
+						<table id="table-breakpoint">
+							<thead>
+								<tr>
+									<th>No.</th>
+									<th>Movie Photo</th>
+									<th>Movie Name</th>
+									<th>Year</th>
+									<th>Status</th>
+									<th>Genre</th>
+									<th>Rating</th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (var item in ViewBag.Series)
+								{
+									<tr>
+										<td>@item.Rank</td>
+										<td class="w3-list-img"><a asp-action="GetSeries" asp-controller="Home" asp-route-dataId="@item.Id"><img src="@item.Image" style="width:200px" alt="" /> </a></td>
+										<td><a asp-action="GetSeries" asp-controller="Home" asp-route-dataId="@item.Id" alt=""><span>@item.Title</span></a></td>
+										<td>@item.Year</td>
+										<td>HD</td>
+										<td class="w3-list-info"><a href="comedy.html">@item.Genre[0]</a></td>
+										<td>@item.Rating</td>
+									</tr>
+								}
+
+
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
